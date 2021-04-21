@@ -1,4 +1,4 @@
-import { useTransactions } from "hooks/TransactionsContext"
+import { useTransactions } from "hooks/useTransactions"
 import { Container } from "./styles"
 
 export const TransactionsTable = () => {

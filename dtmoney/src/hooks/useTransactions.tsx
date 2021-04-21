@@ -20,12 +20,12 @@ interface TransactionFormatted extends Transaction {
 
 type CreateTransactionParams = Pick<Transaction, 'title' | 'type' | 'amount' | 'category'>
 
-interface TransactionsContextData {
+interface useTransactionsData {
   transactions: TransactionFormatted[]
   createTransaction(transaction: CreateTransactionParams): Promise<void>
 }
 
-export const TransactionsContext = createContext({} as TransactionsContextData)
+export const TransactionsContext = createContext({} as useTransactionsData)
 
 interface Props {
   children: ReactNode
