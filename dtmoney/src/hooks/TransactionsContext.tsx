@@ -1,21 +1,12 @@
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from 'react'
+
+import { formatAmount, formatDate } from 'helpers/format'
 import { api } from 'services/api'
-
-function formatAmount(amount: number) {
-  return new Intl.NumberFormat('pt-BR', {
-    style: 'currency',
-    currency: 'BRL',
-  }).format(amount)
-}
-
-function formatDate(date: string) {
-  return new Intl.DateTimeFormat('pt-BR').format(new Date(date))
-}
 
 interface Transaction {
   id: number
   title: string
-  type: string
+  type: 'deposit' | 'withdraw'
   amount: number
   category: string
   createdAt: string

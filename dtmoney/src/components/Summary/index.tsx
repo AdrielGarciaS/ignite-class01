@@ -1,12 +1,40 @@
 import incomeImg from 'assets/income.svg'
 import outcomeImg from 'assets/outcome.svg'
 import totalImg from 'assets/total.svg'
+import { formatAmount } from 'helpers/format'
 import { useTransactions } from 'hooks/TransactionsContext'
 
 import { Container } from "./styles"
 
+interface SummaryTotals {
+  totalDeposits: number
+  totalWithdraws: number
+  balance: number
+}
+
 export const Summary = () => {
-  const data = useTransactions()
+  const { transactions } = useTransactions()
+
+  const { totalDeposits, totalWithdraws, balance } = transactions
+    .reduce((acc, transaction) => {
+      if (transaction.type === 'withdraw') {
+        const totalWithdraws = acc.totalWithdraws + transaction.amount
+        const balance = acc.balance - transaction.amount
+
+        return { ...acc, totalWithdraws, balance }
+      }
+
+      const totalDeposits = acc.totalDeposits + transaction.amount
+      const balance = acc.balance + transaction.amount
+
+      return { ...acc, totalDeposits, balance }
+    }, { totalDeposits: 0, totalWithdraws: 0, balance: 0 } as SummaryTotals)
+
+  const formattedDeposits = formatAmount(totalDeposits)
+  const formattedWithdraws = formatAmount(totalWithdraws)
+  const formattedBalance = formatAmount(balance)
+
+  console.log(balance)
 
   return (
     <Container>
@@ -15,7 +43,7 @@ export const Summary = () => {
           <p>Entradas</p>
           <img src={incomeImg} alt="Entradas"/>
         </header>
-        <strong>R$ 1000,00</strong>
+        <strong>{formattedDeposits}</strong>
       </div>
       
       <div>
@@ -23,7 +51,7 @@ export const Summary = () => {
           <p>Saídas</p>
           <img src={outcomeImg} alt="Saídas"/>
         </header>
-        <strong>- R$ 500,00</strong>
+        <strong>- {formattedWithdraws}</strong>
       </div>
 
       <div className="highlight-background">
@@ -31,7 +59,7 @@ export const Summary = () => {
           <p>Total</p>
           <img src={totalImg} alt="Total"/>
         </header>
-        <strong>R$ 500,00</strong>
+        <strong>{formattedBalance}</strong>
       </div>
     </Container>
   )
