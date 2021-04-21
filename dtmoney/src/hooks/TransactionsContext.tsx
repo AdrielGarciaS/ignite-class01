@@ -1,7 +1,5 @@
-import { createContext, ReactNode, useContext, useEffect, useState } from 'react'
+import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from 'react'
 import { api } from 'services/api'
-
-export const TransactionsContext = createContext([] as Transaction[])
 
 function formatAmount(amount: number) {
   return new Intl.NumberFormat('pt-BR', {
@@ -19,11 +17,24 @@ interface Transaction {
   title: string
   type: string
   amount: number
-  formattedAmount: string
   category: string
   createdAt: string
-  formattedCreatedAt: string
 }
+
+interface TransactionFormatted extends Transaction {
+  formattedAmount: string
+  formattedCreatedAt: string
+
+}
+
+type CreateTransactionParams = Pick<Transaction, 'title' | 'type' | 'amount' | 'category'>
+
+interface TransactionsContextData {
+  transactions: TransactionFormatted[]
+  createTransaction(transaction: CreateTransactionParams): Promise<void>
+}
+
+export const TransactionsContext = createContext({} as TransactionsContextData)
 
 interface Props {
   children: ReactNode
@@ -39,18 +50,38 @@ export function TransactionsProvider(props: Props) {
     .then(response => {
       const { transactions: transactionsData } = response.data
 
-      const _transactions = transactionsData.map((transaction: any) => ({
-        ...transaction,
-        formattedAmount: formatAmount(transaction.amount),
-        formattedCreatedAt: formatDate(transaction.createdAt)
-      }))
-
-      setTransactions(_transactions)
+      setTransactions(transactionsData)
     })
   }, [])
 
+  const formattedTransactions = useMemo<TransactionFormatted[]>(() => 
+     transactions.map(transaction => ({
+      ...transaction,
+      formattedAmount: formatAmount(transaction.amount),
+      formattedCreatedAt: transaction.createdAt ? formatDate(transaction.createdAt) : ''
+    }))
+  , [transactions])
+
+  async function createTransaction(data: CreateTransactionParams) {
+    const response = await api.post<{ transaction: Transaction }>(
+      '/transactions', 
+      {
+        ...data,
+        createdAt: new Date()
+      }
+    )
+
+    const { transaction } = response.data
+
+    setTransactions([...transactions, transaction])
+  }
+
   return (
-    <TransactionsContext.Provider value={transactions}>
+    <TransactionsContext.Provider 
+    value={{ 
+      transactions: formattedTransactions, 
+      createTransaction 
+    }}>
       {children}
     </TransactionsContext.Provider>
   )

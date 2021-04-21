@@ -5,7 +5,7 @@ import closeImg from 'assets/close.svg'
 import incomeImg from 'assets/income.svg'
 import outcomeImg from 'assets/outcome.svg'
 
-import { api } from "services/api";
+import { useTransactions } from "hooks/TransactionsContext";
 
 import { Container, TransactionTypeContainer, RadioBox } from "./styles";
 
@@ -20,16 +20,23 @@ export function NewTransactionModal(props: NewTransactionModalProps) {
   const { isOpen, onRequestClose } = props
 
   const [title, setTitle] = useState('')
-  const [value, setValue] = useState(0)
+  const [amount, setAmount] = useState(0)
   const [type, setType] = useState<TransactionType>('deposit')
   const [category, setCategory] = useState('')
 
-  function handleCreateNewTransaction(event: FormEvent<HTMLFormElement>) {
+  const { createTransaction } = useTransactions()
+
+  async function handleCreateNewTransaction(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
 
-    const data = {title, value, type, category }
+    await createTransaction({ title, amount: amount, type, category })
 
-    api.post('/transactions', data)
+    onRequestClose()
+
+    setTitle('')
+    setAmount(0)
+    setType('deposit')
+    setCategory('')
   }
 
   return (
@@ -59,8 +66,8 @@ export function NewTransactionModal(props: NewTransactionModalProps) {
         <input 
           placeholder="Valor"
           type="number"
-          value={value}
-          onChange={event => setValue(Number(event.target.value))}
+          value={amount}
+          onChange={event => setAmount(Number(event.target.value))}
         />
 
         <TransactionTypeContainer>
