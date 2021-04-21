@@ -1,10 +1,13 @@
 import incomeImg from 'assets/income.svg'
 import outcomeImg from 'assets/outcome.svg'
 import totalImg from 'assets/total.svg'
+import { useTransactions } from 'hooks/TransactionsContext'
 
 import { Container } from "./styles"
 
 export const Summary = () => {
+  const data = useTransactions()
+
   return (
     <Container>
       <div>
