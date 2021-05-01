@@ -1,15 +1,15 @@
-import Head from 'next/head'
+import Head from 'next/head';
 
-export default function Home() {
+const Home = () => {
   return (
     <>
       <Head>
         <title>Início | ig.news</title>
       </Head>
 
-      <h1>
-        Hello World
-      </h1>
+      <h1>Hello World</h1>
     </>
-  )
-}
+  );
+};
+
+export default Home;
