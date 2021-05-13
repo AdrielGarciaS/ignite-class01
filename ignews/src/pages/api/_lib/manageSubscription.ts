@@ -5,10 +5,11 @@ import { stripe } from 'services/stripe';
 interface SaveSubscriptionParams {
   subscriptionId: string;
   customerId: string;
+  createAction?: boolean;
 }
 
 export const saveSubscription = async (params: SaveSubscriptionParams) => {
-  const { subscriptionId, customerId } = params;
+  const { subscriptionId, customerId, createAction = false } = params;
 
   const userRef = await fauna.query(
     q.Select(
@@ -26,7 +27,21 @@ export const saveSubscription = async (params: SaveSubscriptionParams) => {
     priceId: subscription.items.data[0].price.id,
   };
 
+  if (createAction) {
+    await fauna.query(
+      q.Create(q.Collection('subscriptions'), { data: subscriptionData }),
+    );
+
+    return;
+  }
+
   await fauna.query(
-    q.Create(q.Collection('subscriptions'), { data: subscriptionData }),
+    q.Replace(
+      q.Select(
+        'ref',
+        q.Get(q.Match(q.Index('subscription_by_id'), subscriptionId)),
+      ),
+      { data: subscriptionData },
+    ),
   );
 };

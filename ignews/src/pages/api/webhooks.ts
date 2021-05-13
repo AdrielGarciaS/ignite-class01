@@ -23,9 +23,16 @@ export const config = {
 
 enum EventTypes {
   CHECKOUT_SESSION_COMPLETED = 'checkout.session.completed',
+  CUSTOMER_SUBSCRIPTION_CREATED = 'customer.subscription.created',
+  CUSTOMER_SUBSCRIPTION_UPDATED = 'customer.subscription.updated',
+  CUSTOMER_SUBSCRIPTION_DELETED = 'customer.subscription.deleted',
 }
 
-const relevantEvents = new Set([EventTypes.CHECKOUT_SESSION_COMPLETED]);
+const relevantEvents = new Set([
+  EventTypes.CHECKOUT_SESSION_COMPLETED,
+  EventTypes.CUSTOMER_SUBSCRIPTION_UPDATED,
+  EventTypes.CUSTOMER_SUBSCRIPTION_DELETED,
+]);
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method !== 'POST') {
@@ -54,12 +61,24 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
   try {
     switch (type) {
+      case EventTypes.CUSTOMER_SUBSCRIPTION_UPDATED:
+      case EventTypes.CUSTOMER_SUBSCRIPTION_DELETED:
+        const subscription = event.data.object as Stripe.Subscription;
+
+        await saveSubscription({
+          subscriptionId: subscription.id,
+          customerId: String(subscription.customer),
+        });
+
+        break;
+
       case EventTypes.CHECKOUT_SESSION_COMPLETED:
         const checkoutSession = event.data.object as Stripe.Checkout.Session;
 
         await saveSubscription({
           subscriptionId: String(checkoutSession.subscription),
           customerId: String(checkoutSession.customer),
+          createAction: true,
         });
         break;
 
