@@ -4,3 +4,11 @@ export const formatCurrency = (amount: number) => {
     currency: 'USD',
   }).format(amount);
 };
+
+export const formatDate = (date: string | number) => {
+  return new Date(date).toLocaleDateString('pt-BR', {
+    day: '2-digit',
+    month: 'long',
+    year: 'numeric',
+  });
+};
