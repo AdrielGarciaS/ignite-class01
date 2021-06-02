@@ -1,5 +1,7 @@
 import { SignInButton } from 'components/SignInButton';
 
+import { Pages } from 'utils/paths';
+import { ActiveLink } from 'components/ActiveLink';
 import styles from './styles.module.scss';
 
 export const Header = () => {
@@ -9,10 +11,17 @@ export const Header = () => {
         <img src="/images/logo.svg" alt="ig.news" />
 
         <nav>
-          <a className={styles.active} href="#test">
-            Home
-          </a>
-          <a href="#test">Posts</a>
+          <ActiveLink href={Pages.HOME} activeClassName={styles.active}>
+            <a>Home</a>
+          </ActiveLink>
+
+          <ActiveLink
+            href={Pages.POSTS}
+            activeClassName={styles.active}
+            prefetch
+          >
+            <a>Posts</a>
+          </ActiveLink>
         </nav>
 
         <SignInButton />
