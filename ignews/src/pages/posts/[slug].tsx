@@ -52,7 +52,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({
 
   console.log(session);
 
-  if (!session.activeSubscription) {
+  if (!session?.activeSubscription) {
     return {
       redirect: {
         destination: Pages.HOME,
