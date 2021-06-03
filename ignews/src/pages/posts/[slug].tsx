@@ -4,6 +4,7 @@ import Head from 'next/head';
 import { RichText } from 'prismic-dom';
 import { getPrismicClient } from 'services/prismic';
 import { formatDate } from 'utils/helpers';
+import { Pages } from 'utils/paths';
 
 import styles from './post.module.scss';
 
@@ -18,8 +19,6 @@ interface Props {
 
 export const Post = (props: Props) => {
   const { post } = props;
-
-  console.log(post);
 
   return (
     <>
@@ -51,9 +50,16 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({
   const session = await getSession({ req });
   const { slug } = params;
 
-  // if (!session) {
+  console.log(session);
 
-  // }
+  if (!session.activeSubscription) {
+    return {
+      redirect: {
+        destination: Pages.HOME,
+        permanent: false,
+      },
+    };
+  }
 
   const prismic = getPrismicClient(req);
 

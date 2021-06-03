@@ -4,6 +4,7 @@ import NextAuth from 'next-auth';
 import Providers from 'next-auth/providers';
 
 import { fauna } from 'services/fauna';
+import { SubscriptionIndex, UserIndex } from 'utils/faunaIndexes';
 
 export default NextAuth({
   providers: [
@@ -14,6 +15,33 @@ export default NextAuth({
     }),
   ],
   callbacks: {
+    async session(session) {
+      try {
+        const userActiveSubscription = await fauna.query(
+          q.Get(
+            q.Intersection([
+              q.Match(
+                q.Index(SubscriptionIndex.BY_USER_REF),
+                q.Select(
+                  'ref',
+                  q.Get(
+                    q.Match(
+                      q.Index(UserIndex.BY_EMAIL),
+                      q.Casefold(session.user.email),
+                    ),
+                  ),
+                ),
+              ),
+              q.Match(q.Index(SubscriptionIndex.BY_STATUS), 'active'),
+            ]),
+          ),
+        );
+
+        return { ...session, activeSubscription: userActiveSubscription };
+      } catch {
+        return { ...session, activeSubscription: null };
+      }
+    },
     async signIn(user, account, profile) {
       const { email } = user;
 
