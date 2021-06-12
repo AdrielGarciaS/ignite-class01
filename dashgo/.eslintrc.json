@@ -37,6 +37,7 @@
     "@typescript-eslint/no-shadow": "warn",
     "consistent-return": "off",
     "jsx-a11y/anchor-is-valid": "off",
+    "react/require-default-props": "off",
     "import/extensions": [
       "error",
       "ignorePackages",
