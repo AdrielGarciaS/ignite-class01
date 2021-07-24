@@ -25,18 +25,26 @@ import { Sidebar } from 'components/Sidebar';
 import { Pagination } from 'components/Pagination';
 import { formatDateToApp } from 'util/helper';
 
+const fiveSeconds = 1000 * 5;
+
 export default function UserList() {
-  const { data, isLoading, error } = useQuery<User[]>('users', async () => {
-    const response = await fetch('http://localhost:3000/api/users');
-    const parsedData = await response.json();
+  const { data, isLoading, error } = useQuery<User[]>(
+    'users',
+    async () => {
+      const response = await fetch('http://localhost:3000/api/users');
+      const parsedData = await response.json();
 
-    const users = parsedData.users.map(user => ({
-      ...user,
-      createdAt: formatDateToApp(user.createdAt),
-    }));
+      const users = parsedData.users.map(user => ({
+        ...user,
+        createdAt: formatDateToApp(user.createdAt),
+      }));
 
-    return users;
-  });
+      return users;
+    },
+    {
+      staleTime: fiveSeconds,
+    },
+  );
 
   const isWideVersion = useBreakpointValue({
     base: false,
