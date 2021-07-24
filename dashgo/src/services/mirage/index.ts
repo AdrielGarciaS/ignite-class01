@@ -2,12 +2,6 @@
 import { createServer, Factory, Model } from 'miragejs';
 import faker from 'faker';
 
-interface User {
-  name: string;
-  email: string;
-  created_at: string;
-}
-
 export function makeServer() {
   const mirageServer = createServer({
     models: {
@@ -29,7 +23,7 @@ export function makeServer() {
     },
 
     seeds(server) {
-      server.createList('user', 200);
+      server.createList('user', 10);
     },
 
     routes() {

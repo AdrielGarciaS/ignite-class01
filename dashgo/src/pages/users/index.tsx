@@ -1,3 +1,5 @@
+/* eslint-disable no-nested-ternary */
+import Link from 'next/link';
 import {
   Box,
   Flex,
@@ -13,15 +15,29 @@ import {
   Checkbox,
   Text,
   useBreakpointValue,
+  Spinner,
 } from '@chakra-ui/react';
 import { RiAddLine, RiPencilLine } from 'react-icons/ri';
+import { useQuery } from 'react-query';
 
 import { Header } from 'components/Header';
 import { Sidebar } from 'components/Sidebar';
 import { Pagination } from 'components/Pagination';
-import Link from 'next/link';
+import { formatDateToApp } from 'util/helper';
 
 export default function UserList() {
+  const { data, isLoading, error } = useQuery<User[]>('users', async () => {
+    const response = await fetch('http://localhost:3000/api/users');
+    const parsedData = await response.json();
+
+    const users = parsedData.users.map(user => ({
+      ...user,
+      createdAt: formatDateToApp(user.createdAt),
+    }));
+
+    return users;
+  });
+
   const isWideVersion = useBreakpointValue({
     base: false,
     lg: true,
@@ -53,54 +69,66 @@ export default function UserList() {
             </Link>
           </Flex>
 
-          <Table colorScheme="whiteAlpha">
-            <Thead>
-              <Tr>
-                <Th px={['4', '4', '6']} color="gray.300" w="8">
-                  <Checkbox colorScheme="pink" />
-                </Th>
-                <Th>Usuário</Th>
+          {isLoading ? (
+            <Flex justify="center">
+              <Spinner />
+            </Flex>
+          ) : error ? (
+            <Flex justify="center">Falha ao obter usuários.</Flex>
+          ) : (
+            <>
+              <Table colorScheme="whiteAlpha">
+                <Thead>
+                  <Tr>
+                    <Th px={['4', '4', '6']} color="gray.300" w="8">
+                      <Checkbox colorScheme="pink" />
+                    </Th>
+                    <Th>Usuário</Th>
 
-                {isWideVersion && <Th>Data de cadastro</Th>}
+                    {isWideVersion && <Th>Data de cadastro</Th>}
 
-                {isWideVersion && <Th width="8" />}
-              </Tr>
-            </Thead>
+                    {isWideVersion && <Th width="8" />}
+                  </Tr>
+                </Thead>
 
-            <Tbody>
-              <Tr>
-                <Td px={['4', '4', '6']}>
-                  <Checkbox colorScheme="pink" />
-                </Td>
-                <Td>
-                  <Box>
-                    <Text fontWeight="bold">Adriel Garcia</Text>
-                    <Text fontSize="small" color="gray.300">
-                      adrielgarcia@live.com
-                    </Text>
-                  </Box>
-                </Td>
+                <Tbody>
+                  {data.map(user => (
+                    <Tr key={user.id}>
+                      <Td px={['4', '4', '6']}>
+                        <Checkbox colorScheme="pink" />
+                      </Td>
+                      <Td>
+                        <Box>
+                          <Text fontWeight="bold">{user.name}</Text>
+                          <Text fontSize="small" color="gray.300">
+                            {user.email}
+                          </Text>
+                        </Box>
+                      </Td>
 
-                {isWideVersion && <Td>04 de abril, 2021</Td>}
+                      {isWideVersion && <Td>{user.createdAt}</Td>}
 
-                {isWideVersion && (
-                  <Td>
-                    <Button
-                      as="a"
-                      size="sm"
-                      fontSize="sm"
-                      colorScheme="purple"
-                      leftIcon={<Icon as={RiPencilLine} fontSize="16" />}
-                    >
-                      Editar
-                    </Button>
-                  </Td>
-                )}
-              </Tr>
-            </Tbody>
-          </Table>
+                      {isWideVersion && (
+                        <Td>
+                          <Button
+                            as="a"
+                            size="sm"
+                            fontSize="sm"
+                            colorScheme="purple"
+                            leftIcon={<Icon as={RiPencilLine} fontSize="16" />}
+                          >
+                            Editar
+                          </Button>
+                        </Td>
+                      )}
+                    </Tr>
+                  ))}
+                </Tbody>
+              </Table>
 
-          <Pagination />
+              <Pagination />
+            </>
+          )}
         </Box>
       </Flex>
     </Box>
