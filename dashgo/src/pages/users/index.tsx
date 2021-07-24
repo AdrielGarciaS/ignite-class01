@@ -18,32 +18,14 @@ import {
   Spinner,
 } from '@chakra-ui/react';
 import { RiAddLine, RiPencilLine } from 'react-icons/ri';
-import { useQuery } from 'react-query';
 
 import { Header } from 'components/Header';
 import { Sidebar } from 'components/Sidebar';
 import { Pagination } from 'components/Pagination';
-import { formatDateToApp } from 'util/helper';
-import { api } from 'services/api';
-
-const fiveSeconds = 1000 * 5;
+import { useUsers } from 'services/hooks/useUsers';
 
 export default function UserList() {
-  const { data, isLoading, error, isFetching } = useQuery<User[]>(
-    'users',
-    async () => {
-      const response = await api.get('users');
-      const users = response.data.users.map(user => ({
-        ...user,
-        createdAt: formatDateToApp(user.createdAt),
-      }));
-
-      return users;
-    },
-    {
-      staleTime: fiveSeconds,
-    },
-  );
+  const { data, isLoading, error, isFetching } = useUsers();
 
   const isWideVersion = useBreakpointValue({
     base: false,
