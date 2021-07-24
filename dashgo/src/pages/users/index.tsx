@@ -24,6 +24,7 @@ import { Header } from 'components/Header';
 import { Sidebar } from 'components/Sidebar';
 import { Pagination } from 'components/Pagination';
 import { formatDateToApp } from 'util/helper';
+import { api } from 'services/api';
 
 const fiveSeconds = 1000 * 5;
 
@@ -31,10 +32,8 @@ export default function UserList() {
   const { data, isLoading, error, isFetching } = useQuery<User[]>(
     'users',
     async () => {
-      const response = await fetch('http://localhost:3000/api/users');
-      const parsedData = await response.json();
-
-      const users = parsedData.users.map(user => ({
+      const response = await api.get('users');
+      const users = response.data.users.map(user => ({
         ...user,
         createdAt: formatDateToApp(user.createdAt),
       }));
