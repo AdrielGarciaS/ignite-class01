@@ -9,7 +9,7 @@ interface User {
 }
 
 export function makeServer() {
-  const server = createServer({
+  const mirageServer = createServer({
     models: {
       user: Model.extend<Partial<User>>({}),
     },
@@ -44,5 +44,5 @@ export function makeServer() {
     },
   });
 
-  return server;
+  return mirageServer;
 }
