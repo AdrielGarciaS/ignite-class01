@@ -1,5 +1,6 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import { createServer, Model } from 'miragejs';
+import { createServer, Factory, Model } from 'miragejs';
+import faker from 'faker';
 
 interface User {
   name: string;
@@ -11,6 +12,24 @@ export function makeServer() {
   const server = createServer({
     models: {
       user: Model.extend<Partial<User>>({}),
+    },
+
+    factories: {
+      user: Factory.extend({
+        name(i: number) {
+          return `User ${i + 1}`;
+        },
+        email() {
+          return faker.internet.email().toLowerCase();
+        },
+        createdAt() {
+          return faker.date.recent(10);
+        },
+      }),
+    },
+
+    seeds(server) {
+      server.createList('user', 200);
     },
 
     routes() {
