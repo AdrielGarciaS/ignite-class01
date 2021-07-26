@@ -69,7 +69,7 @@ export const Pagination = (props: Props) => {
       <HStack spacing="2">
         {showFirstPage && (
           <>
-            <PaginationItem number={1} />
+            <PaginationItem onPageChange={onPageChange} number={1} />
 
             {showPreviousPagesEllipsis && (
               <Text color="gray.300" w="6" textAlign="center">
@@ -81,13 +81,27 @@ export const Pagination = (props: Props) => {
 
         {showPreviousPages &&
           previousPages.map(page => (
-            <PaginationItem key={page} number={page} />
+            <PaginationItem
+              onPageChange={onPageChange}
+              key={page}
+              number={page}
+            />
           ))}
 
-        <PaginationItem number={currentPage} isCurrent />
+        <PaginationItem
+          onPageChange={onPageChange}
+          number={currentPage}
+          isCurrent
+        />
 
         {showNextPages &&
-          nextPages.map(page => <PaginationItem key={page} number={page} />)}
+          nextPages.map(page => (
+            <PaginationItem
+              onPageChange={onPageChange}
+              key={page}
+              number={page}
+            />
+          ))}
 
         {showLastPage && (
           <>
@@ -97,7 +111,7 @@ export const Pagination = (props: Props) => {
               </Text>
             )}
 
-            <PaginationItem number={lastPage} />
+            <PaginationItem onPageChange={onPageChange} number={lastPage} />
           </>
         )}
       </HStack>
