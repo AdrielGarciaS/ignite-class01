@@ -1,10 +1,20 @@
 /* eslint-disable func-names */
 /* eslint-disable import/no-extraneous-dependencies */
-import { createServer, Factory, Model, Response } from 'miragejs';
+import {
+  ActiveModelSerializer,
+  createServer,
+  Factory,
+  Model,
+  Response,
+} from 'miragejs';
 import faker from 'faker';
 
 export function makeServer() {
   const mirageServer = createServer({
+    serializers: {
+      application: ActiveModelSerializer,
+    },
+
     models: {
       user: Model.extend<Partial<User>>({}),
     },
