@@ -28,7 +28,7 @@ export const getUsers = async (
   return { users, totalCount };
 };
 
-const fiveSeconds = 1000 * 5;
+const tenMinutes = 1000 * 60 * 10;
 
 interface UseUsersParams {
   page?: number;
@@ -38,6 +38,6 @@ export const useUsers = (params?: UseUsersParams) => {
   const { page = 1 } = params ?? {};
 
   return useQuery(['users', page], () => getUsers({ page }), {
-    staleTime: fiveSeconds,
+    staleTime: tenMinutes,
   });
 };
