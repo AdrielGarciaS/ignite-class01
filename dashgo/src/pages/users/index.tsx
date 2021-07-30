@@ -1,6 +1,7 @@
 /* eslint-disable no-nested-ternary */
 import { useState } from 'react';
 import NextLink from 'next/link';
+import { GetServerSideProps } from 'next';
 import {
   Box,
   Flex,
@@ -24,15 +25,26 @@ import { RiAddLine, RiPencilLine } from 'react-icons/ri';
 import { Header } from 'components/Header';
 import { Sidebar } from 'components/Sidebar';
 import { Pagination } from 'components/Pagination';
-import { useUsers } from 'services/hooks/useUsers';
+import { getUsers, useUsers, GetUsersResponse } from 'services/hooks/useUsers';
 import { queryClient } from 'services/queryClient';
 import { api } from 'services/api';
 
 const tenMinutes = 1000 * 60 * 10;
 
+// interface Props {
+//   users: GetUsersResponse;
+// }
+
 export default function UserList() {
+  // const { users } = props;
+
   const [page, setPage] = useState(1);
-  const { data, isLoading, error, isFetching } = useUsers({ page });
+  const { data, isLoading, error, isFetching } = useUsers(
+    { page },
+    // {
+    //   initialData: { users: [] },
+    // },
+  );
 
   const isWideVersion = useBreakpointValue({
     base: false,
@@ -160,3 +172,17 @@ export default function UserList() {
     </Box>
   );
 }
+
+/*
+
+export const getServerSideProps: GetServerSideProps<Props> = async () => {
+  const data = await getUsers({ page: 1 });
+
+  return {
+    props: {
+      users: data,
+    },
+  };
+};
+
+*/

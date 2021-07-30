@@ -1,4 +1,4 @@
-import { useQuery } from 'react-query';
+import { useQuery, UseQueryOptions, UseQueryResult } from 'react-query';
 import { api } from 'services/api';
 import { formatDateToApp } from 'util/helper';
 
@@ -6,7 +6,7 @@ interface GetUsersParams {
   page?: number;
 }
 
-interface GetUsersResponse {
+export interface GetUsersResponse {
   users: User[];
   totalCount: number;
 }
@@ -34,10 +34,14 @@ interface UseUsersParams {
   page?: number;
 }
 
-export const useUsers = (params?: UseUsersParams) => {
+export const useUsers = (
+  params?: UseUsersParams,
+  options?: UseQueryOptions,
+) => {
   const { page = 1 } = params ?? {};
 
   return useQuery(['users', page], () => getUsers({ page }), {
     staleTime: tenMinutes,
-  });
+    ...options,
+  }) as UseQueryResult<GetUsersResponse, unknown>;
 };
