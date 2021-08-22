@@ -1,5 +1,6 @@
 import { GetServerSideProps, GetServerSidePropsContext, GetServerSidePropsResult } from "next";
-import { parseCookies } from "nookies";
+import { destroyCookie, parseCookies } from "nookies";
+import { AuthTokenError } from "../services/errors/AuthTokenError";
 
 export const withSSRAuth = <P> (fn: GetServerSideProps<P>): GetServerSideProps => {
   return async (context: GetServerSidePropsContext): Promise<GetServerSidePropsResult<P>> => {
@@ -14,6 +15,21 @@ export const withSSRAuth = <P> (fn: GetServerSideProps<P>): GetServerSideProps =
       }
     }
 
-    return await fn(context);
+    try {
+      return await fn(context);
+    } catch (error) {
+      if (!(error instanceof AuthTokenError)) return;
+
+      destroyCookie(context, 'nextauth.token');
+      destroyCookie(context, 'nextauth.refreshToken');
+  
+      return {
+        redirect: {
+          destination: '/',
+          permanent: false,
+        }
+      }
+    }
+
   }
 }
