@@ -4,12 +4,6 @@ import { setCookie, parseCookies, destroyCookie } from 'nookies'
 
 import { api } from "../services/apiClient";
 
-interface User {
-  email: string;
-  permissions: string[];
-  roles: string[];
-}
-
 interface SignInCredentials {
   email: string;
   password: string;
