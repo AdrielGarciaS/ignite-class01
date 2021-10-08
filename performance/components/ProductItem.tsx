@@ -4,16 +4,20 @@ interface Props {
   product: { 
     id: number;
     price: number;
-    title: string 
-  }
+    title: string;
+  };
+  onAddToWishList(id: number): void;
 }
 
 const ProductItemComponent = (props: Props) => {
-  const { product } = props;
+  const { product, onAddToWishList } = props;
 
   return (
     <div>
       {product.title} - <strong>{product.price}</strong>
+      <button onClick={() => onAddToWishList(product.id)}>
+        Add to wishlist
+      </button>
     </div>
   );
 }

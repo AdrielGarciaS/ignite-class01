@@ -3,11 +3,16 @@ import { useMemo } from 'react';
 import { ProductItem } from "./ProductItem";
 
 interface Props {
-  results: Array<{ id: number, price: number, title: string }>
+  results: Array<{
+    id: number;
+    price: number;
+    title: string
+  }>;
+  onAddToWishList(id: number): void;
 }
 
 export const SearchResults = (props: Props) => {
-  const { results } = props
+  const { results, onAddToWishList } = props
 
   /**
    * 1. Usado para operações pesadas (cálculos complexos)
@@ -24,7 +29,11 @@ export const SearchResults = (props: Props) => {
       <h2>{totalPrice}</h2>
 
       {results.map(product => (
-        <ProductItem key={product.id} product={product} />
+        <ProductItem
+          key={product.id}
+          product={product}
+          onAddToWishList={onAddToWishList}
+        />
       ))}
     </div>
   )
